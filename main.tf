@@ -20,9 +20,9 @@ provider "aws" {
     region="us-west-2"
 }
 
-resource "aws_ecr_repository" "my_first_ecr_repo" {
-  name = "${var.resname}-mk-ecr-cap1" # Naming my repository
-}
+# resource "aws_ecr_repository" "my_first_ecr_repo" {
+#   name = "${var.resname}-mk-ecr-cap1" # Naming my repository
+# }
 
 resource "aws_ecs_cluster" "my_cluster" {
   name = "${var.resname}-mk-c1-cluster" # Naming the cluster
@@ -34,7 +34,7 @@ resource "aws_ecs_task_definition" "my_first_task" {
   [
     {
       "name": "todo",
-      "image": "${aws_ecr_repository.my_first_ecr_repo.repository_url}:latest",
+      "image": "962804699607.dkr.ecr.us-west-2.amazonaws.com/mk-c2-img:latest",
       "essential": true,
       "portMappings": [
         {
