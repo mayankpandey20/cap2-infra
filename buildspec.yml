@@ -1,0 +1,16 @@
+version: 0.2
+phases:
+    install:
+        commands:
+            - echo print env variables 
+            - printenv
+    pre_build:
+        commands:
+           - echo pre_build stage on `date`
+    build:
+        commands:
+            - echo build stage on `date`
+
+    post_build:
+        commands:
+            echo post_build stage on `date`
