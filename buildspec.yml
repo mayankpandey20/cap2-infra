@@ -11,6 +11,8 @@ phases:
     pre_build:
         commands:
            - echo pre_build stage on `date`
+           - echo --- checking AWS creds ---
+           - aws s3 ls
     build:
         commands:
             - echo build stage on `date`
@@ -20,7 +22,7 @@ phases:
             - echo --- terraform init ---
             - terraform init
             - echo --- terraform apply --- 
-            - terraform apply 
+            - terraform apply -auto-approve
     post_build:
         commands:
             echo post_build stage on `date`
