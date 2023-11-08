@@ -1,10 +1,18 @@
 terraform {
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 4.0"
     }
   }
+
+  backend "s3" {
+    bucket = "cp-mayank-demo"
+    key    = "tfstate/cap2-remote-state"
+    region = "us-west-2"
+  }
+
 }
 
 # Configure the AWS Provider
