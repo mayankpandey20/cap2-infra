@@ -4,13 +4,23 @@ phases:
         commands:
             - echo print env variables 
             - printenv
+            - sudo yum install -y yum-utils
+            - sudo yum-config-manager --add-repo https://rpm.releases.hashicorp.com/AmazonLinux/hashicorp.repo
+            - sudo yum -y install terraform
+            - terraform -help
     pre_build:
         commands:
            - echo pre_build stage on `date`
     build:
         commands:
             - echo build stage on `date`
-
+            - echo ---- listing all the files ----
+            - pwd
+            - ls 
+            - echo --- terraform init ---
+            - terraform init
+            - echo --- terraform apply --- 
+            - terraform apply 
     post_build:
         commands:
             echo post_build stage on `date`
