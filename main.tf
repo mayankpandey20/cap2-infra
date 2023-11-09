@@ -80,7 +80,12 @@ resource "aws_ecs_service" "my_first_service" {
   name            = "${var.resname}-my-first-service"                             # Naming our first service
   cluster         = "${aws_ecs_cluster.my_cluster.id}"             # Referencing our created Cluster
   task_definition = "${aws_ecs_task_definition.my_first_task.arn}" # Referencing the task our service will spin up
-  launch_type     = "FARGATE"
+ // launch_type     = "FARGATE"
+  capacity_provider_strategy {
+    base = 0
+    capacity_provider = "FARGATE"
+    weight = 1
+  }
   desired_count   = 3 # Setting the number of containers we want deployed to 3
   network_configuration {
     subnets       = [ "subnet-021318a3222b6f79e", "subnet-01d69f2a7ee7efb83", "subnet-02a999c1b13aa14cc"]
