@@ -86,6 +86,12 @@ resource "aws_ecs_service" "my_first_service" {
     capacity_provider = "FARGATE"
     weight = 1
   }
+  ////////
+  deployment_circuit_breaker{
+    enable = true
+    rollback = true
+  }
+  //////////
   desired_count   = 3 # Setting the number of containers we want deployed to 3
   network_configuration {
     subnets       = [ "subnet-021318a3222b6f79e", "subnet-01d69f2a7ee7efb83", "subnet-02a999c1b13aa14cc"]
