@@ -39,9 +39,21 @@ resource "aws_ecs_task_definition" "my_first_task" {
       "portMappings": [
         {
           "containerPort": 3000,
-          "hostPort": 3000
+          "hostPort": 3000,
+          "protocol": "tcp",
+          "appProtocol": "http"
         }
       ],
+      "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-create-group": "true",
+                    "awslogs-group": "/ecs/my-first-task000",
+                    "awslogs-region": "us-west-2",
+                    "awslogs-stream-prefix": "ecs"
+                },
+                "secretOptions": []
+        },
       "memory": 512,
       "cpu": 256
     }
