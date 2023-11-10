@@ -25,7 +25,7 @@ provider "aws" {
 # }
 
 resource "aws_ecs_cluster" "my_cluster" {
-  name = "${var.resname}-mk-c1-cluster" # Naming the cluster
+  name = "${var.resname}-mk-cluster" # Naming the cluster
 }
 
 resource "aws_ecs_task_definition" "my_first_task" {
@@ -44,16 +44,6 @@ resource "aws_ecs_task_definition" "my_first_task" {
           "appProtocol": "http"
         }
       ],
-      "logConfiguration": {
-                "logDriver": "awslogs",
-                "options": {
-                    "awslogs-create-group": "true",
-                    "awslogs-group": "/ecs/my-first-task000",
-                    "awslogs-region": "us-west-2",
-                    "awslogs-stream-prefix": "ecs"
-                },
-                "secretOptions": []
-        },
       "memory": 512,
       "cpu": 256
     }
@@ -71,7 +61,7 @@ resource "aws_ecs_task_definition" "my_first_task" {
 }
 
 resource "aws_iam_role" "ecsTaskExecutionRole" {
-  name               = "${var.resname}-mk-c1-ecsTaskExecutionRole"
+  name               = "${var.resname}-mk-ecsTaskExecutionRole"
   assume_role_policy = "${data.aws_iam_policy_document.assume_role_policy.json}"
 }
 
@@ -95,13 +85,13 @@ resource "aws_iam_role_policy_attachment" "ecsTaskExecutionRole_policy" {
 resource "aws_ecs_service" "my_first_service" {
   name            = "${var.resname}-my-first-service02"                             # Naming our first service
   cluster         = "${aws_ecs_cluster.my_cluster.id}"             # Referencing our created Cluster
-  task_definition = "${aws_ecs_task_definition.my_first_task.arn}" # Referencing the task our service will spin up
- // launch_type     = "FARGATE"
-  capacity_provider_strategy {
-    base = 0
-    capacity_provider = "FARGATE"
-    weight = 1
-  }
+  task_definition = "${aws_ecs_task_definition.my_first_task.arn_without_revision}" # Referencing the task our service will spin up
+  launch_type     = "FARGATE"
+  # capacity_provider_strategy {
+  #   base = 0
+  #   capacity_provider = "FARGATE"
+  #   weight = 1
+  # }
   ////////
   deployment_circuit_breaker{
     enable = true
@@ -122,7 +112,7 @@ resource "aws_ecs_service" "my_first_service" {
 }
 
 resource "aws_security_group" "service_security_group" {
-  name        = "${var.resname}-mk-c1-task-sg"
+  name        = "${var.resname}-mk-task-sg"
   vpc_id      = "vpc-0f8815c29df30b66a"
   ingress {
     from_port = 3000
@@ -142,7 +132,7 @@ resource "aws_security_group" "service_security_group" {
 
 
 resource "aws_alb" "application_load_balancer" {
-  name               = "${var.resname}-mk-c1-lb-tf" # Naming our load balancer
+  name               = "${var.resname}-mk-lb-tf" # Naming our load balancer
   load_balancer_type = "application"
   subnets = [ # Referencing the default subnets
     "subnet-07b83e19b1233ad2e",
@@ -155,7 +145,7 @@ resource "aws_alb" "application_load_balancer" {
 
 # Creating a security group for the load balancer:
 resource "aws_security_group" "load_balancer_security_group" {
-  name          = "${var.resname}-mk-c1-alb-sg"
+  name          = "${var.resname}-mk-alb-sg"
   vpc_id        = "vpc-0f8815c29df30b66a"
   ingress {
     from_port   = 80 # Allowing traffic in from port 80
@@ -173,7 +163,7 @@ resource "aws_security_group" "load_balancer_security_group" {
 }
 
 resource "aws_lb_target_group" "target_group" {
-  name        = "${var.resname}-mk-c1-target-group"
+  name        = "${var.resname}-mk-target-group"
   port        = 80
   protocol    = "HTTP"
   target_type = "ip"
@@ -181,6 +171,10 @@ resource "aws_lb_target_group" "target_group" {
   health_check {
     matcher = "200,301,302"
     path = "/"
+    healthy_threshold = 3
+    interval = 30
+    unhealthy_threshold = 5
+    timeout = 5
   }
 }
 
